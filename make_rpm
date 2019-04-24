@@ -21,6 +21,14 @@
 
 echo "make rpm"
 
-FOGLAMP_ROOT="/usr/local/foglamp"
 
-ls -l ${FOGLAMP_ROOT}
+base_dir=/home/ec2-user/repos/foglamp-pkg/packages
+
+# Foglamp should be in
+# ${base_dir}/rpmbuild/BUILDROOT/foglamp-1.5.00-0.0.01.x86_64/usr/local/
+
+rpmbuild --define "_topdir ${base_dir}/rpmbuild"   --noclean -bb ${base_dir}/rpmbuild/SPECS/foglamp.spec
+
+# to Install
+# base_dir=/home/ec2-user/repos/foglamp-pkg/packages
+# sudo yum -y --nogpgcheck localinstall ${base_dir}/rpmbuild/RPMS/x86_64/foglamp-1.5.00-0.0.01.x86_64.rpm

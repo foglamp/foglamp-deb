@@ -24,6 +24,9 @@ echo "make rpm"
 
 base_dir=/home/ec2-user/repos/foglamp-pkg/packages
 
+# Develop
+#base_dir=/home/foglamp/repos/foglamp-pkg/packages
+
 # Foglamp should be in
 # ${base_dir}/rpmbuild/BUILDROOT/foglamp-1.5.02-0.0.00.x86_64/usr/local/
 

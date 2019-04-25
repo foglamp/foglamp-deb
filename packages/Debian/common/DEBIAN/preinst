@@ -18,27 +18,32 @@
 
 ##--------------------------------------------------------------------
 ##
-## @preinst DEBIAN/preinst
 ## This script is used to execute pre installation tasks.
 ##
 ## Author: Ivan Zoratti, Ashwin Gopalakrishnan, Massimiliano Pinto
 ##
 ##--------------------------------------------------------------------
 
-set -e
+# FIXME_I
+#set -e
+
+# FIXME_I - temporary
+sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+if [ ! -f  /usr/bin/python3 ]; then
+	sudo ln -s /usr/bin/python3.6 /usr/bin/python3
+fi
 
 PKG_NAME="foglamp"
 
 is_foglamp_installed () {
     set +e
-    current_files_all=$(dpkg -L $PKG_NAME | grep 'foglamp/bin/foglamp$')
-    rc=$((!$?))
+    rc=`yum list installed ${PKG_NAME} 2> /dev/null | grep -c foglamp`
     echo $rc
     set -e
 }
 
 get_foglamp_script () {
-    foglamp_script=$(dpkg -L $PKG_NAME | grep 'foglamp/bin/foglamp$')
+    foglamp_script=$(rpm -ql ${PKG_NAME} | grep 'foglamp/bin/foglamp$')
     echo $foglamp_script
 }
 
@@ -52,7 +57,7 @@ is_foglamp_running () {
 }
 
 get_current_version_file () {
-    current_version_file=$(dpkg -L $PKG_NAME | grep VERSION)
+    current_version_file=$(rpm -ql ${PKG_NAME} | grep VERSION)
     echo $current_version_file
 }
 
@@ -85,12 +90,12 @@ then
     fi
 
     # Persist current version in case of upgrade/downgrade
-    installed_version=`dpkg -s ${PKG_NAME} | grep '^Version:' | awk '{print $2}'`
+    installed_version=`yum list installed ${PKG_NAME} | grep ${PKG_NAME} | awk '{print $2}'`
     if [ "${installed_version}" ]
     then
         # Persist current FogLAMP version: it will be removed by postinstall script
         this_dir=`pwd`
-        cd usr/local/foglamp/
+        cd /usr/local/foglamp/
         echo "${installed_version}" > .current_installed_version
         cd ${this_dir}
     fi

@@ -145,12 +145,13 @@ copy_new_data
 
 echo "Installing service script"
 copy_service_file
+echo "post 1"
+exit 0
+
 
 echo "Generating certificate files"
 generate_certs
 
-echo "post 1"
-exit 0
 
 echo "Generating auth certificate files"
 generate_auth_certs

@@ -18,19 +18,19 @@
 
 ##--------------------------------------------------------------------
 ##
-## @prerm DEBIAN/prerm
 ## This script is used to execute before the removal of files associated with the package.
 ##
-## Author: Ivan Zoratti, Ashwin Gopalakrishnan
+## Author: Ivan Zoratti, Ashwin Gopalakrishnan, Stefano Simonelli
 ##
 ##----------------------------------------------------------------------------------------
 
-set -e
+# FIXME_I
+#set -e
 
 PKG_NAME="foglamp"
 
 get_foglamp_script () {
-    foglamp_script=$(dpkg -L $PKG_NAME | grep 'foglamp/bin/foglamp$')
+    foglamp_script=$(rpm -ql ${PKG_NAME} | grep 'foglamp/bin/foglamp$')
     echo $foglamp_script
 }
 
@@ -55,7 +55,7 @@ kill_foglamp () {
 }
 
 disable_foglamp_service () {
-    systemctl disable foglamp
+    sudo systemctl disable foglamp
 }
 
 remove_foglamp_service_file () {
@@ -63,8 +63,8 @@ remove_foglamp_service_file () {
 }
 
 reset_systemctl () {
-    systemctl daemon-reload
-    systemctl reset-failed
+    sudo systemctl daemon-reload
+    sudo systemctl reset-failed
 }
 
 remove_pycache_files () {
@@ -75,12 +75,14 @@ remove_pycache_files () {
 }
 
 remove_data_files () {
-    rm -rf /usr/local/foglamp/data
+	rm -rf /usr/local/foglamp/data
+
 }
 
 # main
 
 IS_FOGLAMP_RUNNING=$(is_foglamp_running)
+
 if [ "$IS_FOGLAMP_RUNNING" -eq "1" ]
 then
     echo "FogLAMP is currently running."

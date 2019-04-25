@@ -1,22 +1,3 @@
-Skip to content
-
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
-
-@sstefano69
-5
-0 1 foglamp/foglamp-pkg
- Code  Issues 0  Pull requests 1  Projects 0  Wiki  Insights  Settings
-foglamp-pkg/packages/Debian/common/DEBIAN/postinst
- amarendra-dianmoic FOGL-2723 - Added missing auth certificates generation.
-8a4af3b 10 days ago
-@ashwinscale @amarendra-dianomic @pintomax @izoratti @izzypizzy65 @ashish-jabble
-Executable File  160 lines (139 sloc)  5.39 KB
-
 #!/usr/bin/env bash
 
 ##--------------------------------------------------------------------
@@ -176,15 +157,3 @@ echo "Enabling FogLAMP service"
 enable_foglamp_service
 echo "Starting FogLAMP service"
 start_foglamp_service
-© 2019 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About

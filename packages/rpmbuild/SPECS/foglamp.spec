@@ -13,8 +13,9 @@ URL:           http://www.dianomic.com
 %define install_path	/usr/local
 
 Prefix:        /usr/local
-Requires:      sudo, boost-devel, dbus-devel, glib2-devel, rsyslog, openssl-devel, postgresql-devel, wget, zlib-devel, git, cmake, libuuid-devel
+Requires:      sudo, python36u, python36u-libs, python36u-devel, python36u-pip, boost-devel, dbus-devel, glib2-devel, rsyslog, openssl-devel, postgresql-devel, wget, zlib-devel, git, cmake, libuuid-devel
 AutoReqProv:   no
+
 
 %description
 FogLAMP, the open source platform for the Internet of Things
@@ -195,7 +196,11 @@ kill_foglamp () {
 }
 
 disable_foglamp_service () {
+	# FIXME_I
+	set +e
+	echo "DBG - disable_foglamp_service "
     sudo systemctl disable foglamp
+    set -e
 }
 
 remove_foglamp_service_file () {
@@ -208,9 +213,12 @@ reset_systemctl () {
 }
 
 remove_pycache_files () {
-    set -e
+    set +e
+    # FIXME_I
+    echo "DBG - remove_pycache_files "
     find /usr/local/foglamp -name "*.pyc" -exec rm -rf {} \;
     find /usr/local/foglamp -name "__pycache__" -exec rm -rf {} \;
+    set -e
 }
 
 remove_data_files () {

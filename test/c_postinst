@@ -20,7 +20,7 @@
 ##
 ## This script is used to execute post installation tasks.
 ##
-## Author: Ivan Zoratti, Massimiliano Pinto
+## Author: Ivan Zoratti, Massimiliano Pinto, Stefano Simonelli
 ##
 ##--------------------------------------------------------------------
 
@@ -33,12 +33,12 @@ SSL_DAYS="365"
 AUTH_NAME="ca"
 
 link_update_task() {
-    echo "Changing setuid of update_task.apt"
-    chmod ugo+s /usr/local/foglamp/bin/update_task.apt
+    echo "Changing setuid of update_task.rpm"
+    chmod ugo+s /usr/local/foglamp/bin/update_task.rpm
     echo "Removing task/update"
     [ -e /usr/local/foglamp/scripts/tasks/update ] && rm  /usr/local/foglamp/scripts/tasks/update
     echo "Create link file"
-    ln -s /usr/local/foglamp/bin/update_task.apt /usr/local/foglamp/scripts/tasks/update
+    ln -s /usr/local/foglamp/bin/update_task.rpm /usr/local/foglamp/scripts/tasks/update
 }
 
 copy_foglamp_sudoer_file() {
@@ -50,7 +50,10 @@ copy_service_file() {
 }
 
 enable_foglamp_service() {
-    systemctl enable foglamp
+	# FIXME_I
+    #systemctl enable foglamp
+	/sbin/chkconfig foglamp on
+
 }
 
 start_foglamp_service() {
@@ -61,6 +64,11 @@ set_files_ownership () {
     chown root:root /etc/init.d/foglamp
     chown -R root:root /usr/local/foglamp
     chown -R ${SUDO_USER}:${SUDO_USER} /usr/local/foglamp/data
+
+    # FIXME_I
+    ls -l /usr/local
+    ls -l /usr/local/foglamp
+
 }
 
 generate_certs () {
@@ -112,7 +120,7 @@ copy_new_data () {
 }
 
 install_pip3_packages () {
-    sudo pip3 install -r /usr/local/foglamp/python/requirements.txt
+	pip3 install -r /usr/local/foglamp/python/requirements.txt
 }
 
 # Call FogLAMP package update script
@@ -122,10 +130,10 @@ call_package_update_script () {
     installed_version_file="/usr/local/foglamp/.current_installed_version"
     if [ -s "${installed_version_file}" ]; then
         current_installed_version=`cat ${installed_version_file}`
-        update_script="/usr/local/foglamp/scripts/package/debian/package_update.sh"
+        update_script="/usr/local/foglamp/scripts/package/rpm/package_update.sh"
         # Check update script exists
         if [ -x "${update_script}" ] && [ -s "${update_script}" ] && [ -O "${update_script}" ]; then
-            # Call Debian update script passing the previous version
+            # Call RPM update script passing the previous version
             ${update_script} ${current_installed_version}
         fi
         # Update done: remove temp file
@@ -134,8 +142,6 @@ call_package_update_script () {
 }
 
 # main
-# FIXME_I
-sudo chown -R foglamp:foglamp /usr/local/foglamp
 
 echo "Install python dependencies"
 install_pip3_packages
@@ -145,29 +151,29 @@ copy_new_data
 
 echo "Installing service script"
 copy_service_file
-echo "post 1"
-exit 0
-
 
 echo "Generating certificate files"
 generate_certs
 
-
 echo "Generating auth certificate files"
 generate_auth_certs
+
 echo "Setting ownership of FogLAMP files"
 set_files_ownership
 
 # Call FogLAMP package update script
-call_package_update_script
+# TODO: DISABLED - to be implemented
+#call_package_update_script
 
-echo "Linking update task"
-link_update_task
+#TODO: DISABLED - to be implemented
+#echo "Linking update task"
+#link_update_task
 
 echo "Copying sodoers file"
 copy_foglamp_sudoer_file
 
 echo "Enabling FogLAMP service"
 enable_foglamp_service
+
 echo "Starting FogLAMP service"
 start_foglamp_service

@@ -13,7 +13,7 @@ URL:           http://www.dianomic.com
 %define install_path	/usr/local
 
 Prefix:        /usr/local
-Requires:      boost-devel, glib2-devel, rsyslog, openssl-devel, wget, zlib-devel, git, cmake, libuuid-devel, dbus-devel, centos-release-scl, sqlite, postgresql-devel
+Requires:      centos-release-scl, boost-devel, glib2-devel, rsyslog, openssl-devel, wget, zlib-devel, git, cmake, libuuid-devel, dbus-devel, sqlite, postgresql-devel, rh-python36
 AutoReqProv:   no
 
 
@@ -92,13 +92,8 @@ exists_schema_change_path () {
 
 # main
 
-echo " DBG step 1"
-
 # check if foglamp is installed
 IS_FOGLAMP_INSTALLED=$(is_foglamp_installed)
-
-echo " DBG step 2 :$IS_FOGLAMP_INSTALLED:"
-
 
 # if foglamp is installed...
 if [ "$IS_FOGLAMP_INSTALLED" -eq "1" ]
@@ -199,7 +194,6 @@ kill_foglamp () {
 disable_foglamp_service () {
 	# FIXME_I
 	set +e
-	echo "DBG - disable_foglamp_service "
     sudo systemctl disable foglamp
     set -e
 }
@@ -216,7 +210,6 @@ reset_systemctl () {
 remove_pycache_files () {
     set +e
     # FIXME_I
-    echo "DBG - remove_pycache_files "
     find /usr/local/foglamp -name "*.pyc" -exec rm -rf {} \;
     find /usr/local/foglamp -name "__pycache__" -exec rm -rf {} \;
     set -e
@@ -279,7 +272,8 @@ reset_systemctl
 ##
 ##--------------------------------------------------------------------
 
-set -e
+# FIXME_I
+#set -e
 
 
 # certificate generation defaults
@@ -312,17 +306,15 @@ enable_foglamp_service() {
 }
 
 start_foglamp_service() {
-    systemctl start foglamp
+	# FIXME_I
+    #systemctl start foglamp
+    echo ""
 }
 
 set_files_ownership () {
     chown root:root /etc/init.d/foglamp
     chown -R root:root /usr/local/foglamp
     chown -R ${SUDO_USER}:${SUDO_USER} /usr/local/foglamp/data
-
-    # FIXME_I
-    ls -l /usr/local
-    ls -l /usr/local/foglamp
 
 }
 
@@ -375,7 +367,16 @@ copy_new_data () {
 }
 
 install_pip3_packages () {
-	pip3 install -r /usr/local/foglamp/python/requirements.txt
+
+	echo "# "                                   >> /home/${SUDO_USER}/.bashrc
+	echo "# added by FogLamp"                   >> /home/${SUDO_USER}/.bashrc
+	echo "source scl_source enable rh-python36" >> /home/${SUDO_USER}/.bashrc
+
+	source scl_source enable rh-python36
+
+	pip install -Ir /usr/local/foglamp/python/requirements.txt
+
+	sudo bash -c 'source scl_source enable rh-python36;pip install dbus-python'
 }
 
 # Call FogLAMP package update script
@@ -395,6 +396,8 @@ call_package_update_script () {
         rm ${installed_version_file}
     fi
 }
+
+
 
 # main
 
@@ -432,7 +435,6 @@ enable_foglamp_service
 
 echo "Starting FogLAMP service"
 start_foglamp_service
-
 
 
 %files

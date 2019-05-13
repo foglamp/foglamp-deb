@@ -161,9 +161,13 @@ do
 	mkdir "${package_name}"
 
 	# If plugin_type_install if not set use plugin_type value
-	if [ "${plugin_type_install}" = "" ]; then
-            plugin_type_install=${plugin_type}
-	fi
+	if [ "${plugin_type}" = "notify" ]; then
+	    plugin_type_install="notificationDelivery"
+        elif [ "${plugin_type}" = "rule" ]; then
+	    plugin_type_install="notificationRule"
+	else
+	    plugin_type_install=${plugin_type}
+        fi
 
 	if [ -d ${GIT_ROOT}/python ]; then
 	    installs=python/foglamp/plugins/${plugin_type_install}/${plugin_install_dirname}

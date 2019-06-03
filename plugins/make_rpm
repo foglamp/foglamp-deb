@@ -222,8 +222,8 @@ EOF
 			if [ -f requirements.sh ]; then
 				./requirements.sh
 			fi
-			if [ -f build_rhel.sh ]; then
-				./build_rhel.sh
+			if [ -f build.sh ]; then
+				./build.sh
 			else
 				mkdir -p build; cd build; cmake ..; make
 			fi)
